@@ -1,8 +1,8 @@
 # BaiduTranslator
 Reverse engineered Baidu Fanyi client written in Python
 
-This is a native Python implementation of Baidu Fanyi. 
-No 'bundling V8 JS engine into Python and run Baidu's JS code' trickery here.
+This is a native Python implementation of Baidu Fanyi's JS code. 
+No 'bundling V8 JS engine into Python and run Baidu Fanyi's JS code' trickery here.
 
 Require Python modules-
   requests
