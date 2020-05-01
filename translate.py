@@ -1,5 +1,24 @@
 #!/usr/bin/python3
 # -*- coding: UTF-8 -*-
+# Copyright (c) 2020 moonlightelite
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 import sys
 import re
 import requests
@@ -223,7 +242,7 @@ class BaiduTranslate():
             if "error" in response_dict.keys() and not retry:
                 raise (TranslationException(response_dict))
 
-            trans = response_dict["trans_result"]["data"][0]["dst"]
+            trans = "\n".join(x for x in map(lambda x: x["dst"], response_dict["trans_result"]["data"]))
 
             if not self.cache[input_lang + output_lang].get(input_string, None):
                 self.cache[input_lang + output_lang][input_string] = trans
@@ -292,11 +311,13 @@ def named_pipe_server(baidu_translate):
 
 
 def test(baidu):
-    print(baidu.translate("""2000年時，香港島人口有1,367,900人，約佔全港人口19%。人口密度每平方公里18,000人，高於整體密度（每平方公里7,000人）。
-    如果單以島嶼的比較，香港島是全香港人口最多的島，也是中華人民共和國第三最多常住人口的島，僅次於海南島和廈門島（詳見中國島嶼）。"""))
+    samples = ["""2000年時，香港島人口有1,367,900人，約佔全港人口19%。人口密度每平方公里18,000人，高於整體密度（每平方公里7,000人）。
+    如果單以島嶼的比較，香港島是全香港人口最多的島，也是中華人民共和國第三最多常住人口的島，僅次於海南島和廈門島（詳見中國島嶼）。""",
+    """一天睡3小時、還能4天不休息，周揚青質疑小豬為了約人不睡覺，
+    過往受訪片段出爐，羅志祥曾自曝體力好、健檢報告精采，讓網友瞬間理解「時間管理」能力。"""]
 
-    print(baidu.translate("""一天睡3小時、還能4天不休息，周揚青質疑小豬為了約人不睡覺，
-    過往受訪片段出爐，羅志祥曾自曝體力好、健檢報告精采，讓網友瞬間理解「時間管理」能力。""", output_lang="jp"))
+    print(samples[0], "\n", baidu.translate(samples[0]))
+    print(samples[1], "\n", baidu.translate(samples[1], output_lang="jp"))
 
 def run(args):
     baidu = BaiduTranslate()
