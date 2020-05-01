@@ -38,10 +38,10 @@ Note-
   - Daemon mode uses Windows named pipe to communicate with another process.
 
 TODO-
-  Port this to C++ or Rust
+  - Port this to C++ or Rust
   
 References-
-  https://github.com/TimLuo465/baidu-translate-api
-  https://blog.csdn.net/hujingshuang/article/details/80180294
-  https://blog.csdn.net/zhu6201976/article/details/98262497
+  - https://github.com/TimLuo465/baidu-translate-api
+  - https://blog.csdn.net/hujingshuang/article/details/80180294
+  - https://blog.csdn.net/zhu6201976/article/details/98262497
   
