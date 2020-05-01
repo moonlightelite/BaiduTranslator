@@ -2,7 +2,10 @@
 Reverse engineered Baidu Fanyi client written in Python
 
 This is a native Python implementation of Baidu Fanyi's JS code. 
+
 No 'bundling V8 JS engine into Python and run Baidu Fanyi's JS code' trickery here.
+
+Why Baidu Fanyi? Their Chinese-Japanese/English translation is substantially better than Google Translate. For English, Baidu Fanyi is worse.
 
 Require Python modules-
   - requests
