@@ -7,9 +7,16 @@ No 'bundling V8 JS engine into Python and run Baidu Fanyi's JS code' trickery he
 
 Why Baidu Fanyi? Their Chinese-Japanese/English translation is substantially better than Google Translate. For English, Baidu Fanyi is worse.
 
+Also, there could be copyright concerns if you simply copy/paste Baidu's JS code into your program. This RE implementation is done for interoperability reason, so you probably won't infringe on Baidu's copyright.
+
 Require Python modules-
   - requests
   - pywin32 (optional, only for daemon mode)
+  
+Installation-
+  - Install Python 3
+  - Install PIP
+  - Install requests and pywin32 with PIP
 
 Usage:
 ```
