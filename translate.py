@@ -19,12 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import sys
+import sys,os
 import re
 import requests
 import argparse
 import time
 import urllib.parse
+import sqlite3
+
 HAVE_PYWIN32 = True
 try:
     import win32pipe, win32file, pywintypes
@@ -163,6 +165,7 @@ class BaiduTranslate():
     }
     cookies = {}
     cache = {}
+    conn = None
 
     def __init__(self, input_lang=None, output_lang="en"):
         self.input_lang = input_lang
@@ -172,6 +175,7 @@ class BaiduTranslate():
         self.session.headers = self.headers
 
         self.token, self.gtk = self.get_gtk_token()
+        self.setupSQLite()
 
 
     def get_gtk_token(self):
@@ -198,6 +202,17 @@ class BaiduTranslate():
         except Exception as e:
             print(e)
 
+    def setupSQLite(self):
+        self.conn = sqlite3.connect(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'translation.db'))
+        c = self.conn.cursor()
+
+        try:
+            c.execute('''CREATE TABLE translation
+                 (input_text, output_text)''')
+            self.conn.commit()
+        except sqlite3.OperationalError:
+            pass
+
     def translate(self, input_string, input_lang=None, output_lang=None):
         try:
             if not input_string.strip():
@@ -209,6 +224,7 @@ class BaiduTranslate():
             return " "
 
     def _translate(self, input_string, input_lang=None, output_lang=None, retry=False):
+        c = self.conn.cursor()
         if not input_lang:
             if not self.input_lang:
                 input_lang = self.detect_lang(input_string)
@@ -222,6 +238,11 @@ class BaiduTranslate():
             self.cache[input_lang + output_lang] = {}
         if self.cache[input_lang + output_lang].get(input_string, None):
             return self.cache[input_lang + output_lang].get(input_string)
+        input_text = (input_string)
+        c.execute('SELECT output_text FROM translation WHERE input_text=?', (input_string,))
+        output_text = c.fetchone()
+        if output_text:
+            return output_text[0]
 
         decoder = BaiduDecoder(self.gtk)
         sign = decoder.e(input_string)
@@ -246,6 +267,9 @@ class BaiduTranslate():
 
             if not self.cache[input_lang + output_lang].get(input_string, None):
                 self.cache[input_lang + output_lang][input_string] = trans
+            if not output_text:
+                c.execute('INSERT INTO translation(input_text,output_text) VALUES (?,?)', (input_string, trans))
+                self.conn.commit()
             return trans
         except TranslationException as e:
             print("Translation error. Resetting keys")
@@ -285,9 +309,18 @@ def named_pipe_server(baidu_translate):
                 fromLang = info[0][1]
                 phase = urllib.parse.unquote(info[0][2])
                 print(f"Phase: {phase}")
-                data = baidu_translate.translate(phase, input_lang=fromLang, output_lang=toLang)
+                try:
+                    if phase and "×" in phase:
+                        phase = phase.replace("×", "ン")
+                    if phase:
+                        data = baidu_translate.translate(phase, input_lang=fromLang, output_lang=toLang)
+                except Exception as e:
+                    raise e
                 print(f"Translated: {data}")
-                data = data.encode(encoding)
+                try:
+                    data = data.encode(encoding)
+                except:
+                    data = "failed".encode(encoding)
                 err, bytes_written=win32file.WriteFile(
                     pipe, 
                     data
