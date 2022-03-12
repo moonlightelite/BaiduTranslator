@@ -1,6 +1,8 @@
 # BaiduTranslator
 Reverse engineered Baidu Fanyi client written in Python
 
+![Alt text](example.gif?raw=true "Title")
+
 This is a native Python implementation of Baidu Fanyi's JS code. 
 
 No 'bundling V8 JS engine into Python and run Baidu Fanyi's JS code' trickery here.
@@ -21,7 +23,7 @@ Installation-
 Usage:
 ```
 $ ./translate.py -h
-usage: translate.py [-h] [-i INPUT] [-o OUTPUT_LANGUAGE] [-t] [-d]
+usage: translate.py [-h] [-i INPUT] [-o OUTPUT_LANGUAGE] [-t] [-p] [-d] [-bc BAIDUCOOKIE] [-f FILE]
 
 Translation using Baidu Translate.
 
@@ -30,10 +32,14 @@ optional arguments:
   -i INPUT, --input INPUT
                         Phrase to be translated
   -o OUTPUT_LANGUAGE, --output_language OUTPUT_LANGUAGE
-                        Output language (eg. en for English, jp for Japanese,
-                        zh for Chinese etc.)
+                        Output language (eg. en for English, 'zh': '中文','jp': '日语','yue': '粤语','wyw': '文言文','cht': '中文繁体'
+                        etc.)
   -t, --test            Test mode
+  -p, --proxy           Use proxy file
   -d, --daemon          Run as daemon
+  -bc BAIDUCOOKIE, --baiducookie BAIDUCOOKIE
+                        BAIDUID cookie (xxx...:FG=1)
+  -f FILE               File to be translated
 ```
 
 Example-
@@ -44,7 +50,8 @@ $ ./translate.py -i 'Hundreds of demonstrators, a few of them armed, gathered in
 
 Note-
   - Require Python 3
-  - Baidu has rate limiter on their server, so don't go crazy.
+  - Baidu has changed its cookie validation scheme. Now a new BAIDUID cookie is activated for translation only after 24 hours. This means that if you run the script for the first time, you have to wait 24 hours before the server would accept the new BAIDUID cookie. If you already have a valid cookie (eg. from a web  browser), you can enter it with --baiducookie.
+  - Baidu has rate limiter on their server, so you might want to use multi-proxies mode --proxies if you need to go faster
   - Daemon mode uses Windows named pipe to communicate with another process.
 
 TODO-
