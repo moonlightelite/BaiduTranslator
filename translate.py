@@ -215,7 +215,7 @@ class BaiduTranslate():
         response = response.content.decode()
     
         token = re.findall(r"\stoken: '(.+)'", response)[0]
-        gtk = re.findall(r";window.gtk = '(.+)';", response)[0]
+        gtk = re.findall(r";window.gtk = [\"'](.+)[\"'];", response)[0]
 
         return token, gtk
 
